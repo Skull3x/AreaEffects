@@ -1,6 +1,6 @@
 <?php
 
-namespace AreaEffects;
+namespace AreaGamemodes;
 
 use pocketmine\Player;
 use pocketmine\command\Command;
@@ -9,8 +9,7 @@ use pocketmine\utils\TextFormat;
 use pocketmine\utils\Config;
 use pocketmine\plugin\PluginBase;
 use pocketmine\level\Position;
-use pocketmine\event\entity;
-use pocketmine\entity\Effect;
+use pocketmine\event\Entity;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\Listener;
 use pocketmine\command\CommandSender;
@@ -24,14 +23,14 @@ class Main extends PluginBase implements Listener{
     private $pos1, $pos2;
 
     public function onLoad() {
-        $this->getLogger()->info(TextFormat::GREEN."AreaEffects has been loaded!");
+        $this->getLogger()->info(TextFormat::GREEN."AreaGamemodes has been loaded!");
     }
     
     public function onEnable() {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
         @mkdir($this->getDataFolder());
         $this->areas = (new \pocketmine\utils\Config($this->getDataFolder()."areas.yml", Config::YAML))->getAll();
-        $this->getLogger()->info(TextFormat::GREEN."AreaEffects has been loaded!");
+        $this->getLogger()->info(TextFormat::GREEN."AreaGamemodes has been loaded!");
     }
     
     public function onDisable(){
@@ -39,7 +38,7 @@ class Main extends PluginBase implements Listener{
     }
     
     public function onCommand(CommandSender $sender, Command $command, $label, array $args) { $this->configFile = new Config($this->getDataFolder()."areas.yml", Config::YAML, array());
-        if ($command == "ae") {    
+        if ($command == "ag") {    
             switch ($args[0]){
                 case "pos1":
                     if($sender instanceof Player){
@@ -47,7 +46,7 @@ class Main extends PluginBase implements Listener{
                         $pos1y = $sender->getFloorY();
                         $pos1z = $sender->getFloorZ();
                         $this->pos1 = new \pocketmine\math\Vector3($pos1x, $pos1y, $pos1z);
-                        $sender->sendMessage(TextFormat::GREEN."[AreaEffects]Possition 1 set as x:".$pos1x." y:".$pos1y." z:".$pos1z);
+                        $sender->sendMessage(TextFormat::GREEN."[AG] Possition 1 set as x:".$pos1x." y:".$pos1y." z:".$pos1z);
                         return true;
                         break;
                         }
@@ -58,7 +57,7 @@ class Main extends PluginBase implements Listener{
                         $pos2y = $sender->getFloorY();
                         $pos2z = $sender->getFloorZ();
                         $this->pos2 = new \pocketmine\math\Vector3($pos2x, $pos2y, $pos2z);
-                        $sender->sendMessage(TextFormat::GREEN."[AreaEffects]Possition 2 set as x:".$pos2x." y:".$pos2y." z:".$pos2z);
+                        $sender->sendMessage(TextFormat::GREEN."[AG] Possition 2 set as x:".$pos2x." y:".$pos2y." z:".$pos2z);
                         return true;
                         break;
                         }
@@ -78,14 +77,10 @@ class Main extends PluginBase implements Listener{
                             'y' => $this->pos2->y,
                             'z' => $this->pos2->z
                             ),
-                        'effect' => array(
+                        'gamemode' => array(
                             'id' => $args[2],
-                            'duration' => 10,//only editable in configs
-                            'amplifier' => 0,//TODO editable by command
-                            'show' => true,//   ^
-                            )//TODO multipul effects per area
-                            );
-                        $sender->sendMessage(TextFormat::GREEN."[AreaEffects]Area created");
+                            ));
+                        $sender->sendMessage(TextFormat::GREEN."[AG] Area created");
                         return true;
                         break;
                         }
@@ -104,7 +99,7 @@ class Main extends PluginBase implements Listener{
         $player = $event->getPlayer();
         if(empty($this->areas)) {return;}
         foreach($this->areas as $area){
-            if($this->isInArea($player, $area)){$this->giveEffect($player ,$area);
+            if($this->isInArea($player, $area)){$this->setGamemode($player ,$area);
                 }
             }
         }
@@ -117,14 +112,10 @@ class Main extends PluginBase implements Listener{
         }
     }
         
-    public function giveEffect($player, $area){
+    public function setGamemode($player, $area){
         if($player instanceof Player){
-            $id = $area['effect'['id']];
-            $effect = Effect::getEffect($id);
-            $effect->setDuration($area['effect'['duration']]);
-            $effect->setAmplifier($area['effect'['amplifier']]);
-            $effect->setVisable($area['effect'['show']]);
-            $player->addEffect($effect);
+            $id = $area['id'];
+            $player->setGamemode($id);
         }
     }
 }
