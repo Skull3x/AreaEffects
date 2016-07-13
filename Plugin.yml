@@ -1,17 +1,18 @@
-name: AreaEffects
-main: AreaEffects\Main
-version: 0.7.1
+name: AreaGamemodes
+main: AreaGamemodes\Main
+version: 0.1.1
 api: [1.12.0]
 
 load: STARTUP
 author: Rspuds
-description: Applys effects useing areas
+editor: Skull3x
+description: Applys gamemodes useing areas
 commands:
-        ae:
-            description: All area effects commands
-            usage: "/ae <command>"
-            permisstion: ae.commands.ae
+        ag:
+            description: All area gamemodes commands
+            usage: "/ag <command>"
+            permisstion: ag.commands.ag
 permissions:
-        ae.command.ae:
+        ag.command.ag:
                 default: true
                 description: "runs all commands"
